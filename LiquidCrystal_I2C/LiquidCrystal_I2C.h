@@ -1,4 +1,3 @@
-//YWROBOT
 #ifndef LiquidCrystal_I2C_h
 #define LiquidCrystal_I2C_h
 
@@ -45,12 +44,12 @@
 #define LCD_5x8DOTS 0x00
 
 // flags for backlight control
-#define LCD_BACKLIGHT 0x08
-#define LCD_NOBACKLIGHT 0x00
+#define LCD_BACKLIGHT 0x00
+#define LCD_NOBACKLIGHT 0x80
 
-#define En B00000100  // Enable bit
-#define Rw B00000010  // Read/Write bit
-#define Rs B00000001  // Register select bit
+#define En B00010000  // Enable bit
+#define Rw B00100000  // Read/Write bit
+#define Rs B01000000  // Register select bit
 
 class LiquidCrystal_I2C : public Print {
 public:
@@ -78,11 +77,7 @@ public:
   void noAutoscroll(); 
   void createChar(uint8_t, uint8_t[]);
   void setCursor(uint8_t, uint8_t); 
-#if defined(ARDUINO) && ARDUINO >= 100
-  virtual size_t write(uint8_t);
-#else
   virtual void write(uint8_t);
-#endif
   void command(uint8_t);
   void init();
 

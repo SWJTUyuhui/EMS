@@ -36,9 +36,7 @@ boolean RecStar = false;
 void setup()
 {
   Serial.begin(9600);
-  Serial.println("DHT TEST PROGRAM ");
-  Serial.print("LIBRARY VERSION: ");
-  Serial.println(DHT_LIB_VERSION);
+  Serial.println("Beginning...");
   Serial.println();
   Serial.println("Type,\tstatus,\tHumidity (%),\tTemperature (C)");
   
@@ -54,7 +52,7 @@ void setup()
   lcd.backlight();  
 
   lcd.setCursor(0,0);
-  lcd.print(" DEROBOT E.M.S ");
+  lcd.print(" SWJTU_E.M.S ");
   lcd.setCursor(0,1);
   lcd.print("CD Site IoT Team");
   delay(3000);  
@@ -77,7 +75,7 @@ void loop()
   switch (chk)
   {
     case DHTLIB_OK:  
-		Serial.print("OK,\t"); 
+		//Serial.print("OK,\t"); 
 		break;
     case DHTLIB_ERROR_CHECKSUM: 
 		Serial.print("Checksum error,\t"); 
@@ -114,7 +112,7 @@ void refresh_display()
 
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("  DBRobot-EMC  ");
+  lcd.print("  SWJTU_EMC  ");
   
   lcd.setCursor(0,1);
   lcd.print("PM2.5:");
@@ -154,8 +152,8 @@ void Sensor_PM()
     PM1_Update = recData[4]*256 + recData[5];
     PM25_Update = recData[6]*256 + recData[7];
     PM10_Update = recData[8]*256 + recData[9];
-    Serial.println("Good PM data");
-      Serial.println(PM10_Update);
+    Serial.print("PM2.5 data:");
+    Serial.println(PM25_Update);
       //pass;
   }
   else
@@ -177,7 +175,7 @@ void read_PM()
   //digitalWrite(PM_SETPin, HIGH);
   //delay (800);
   
-  Serial.println("PM Sensor Data:");
+ // Serial.println("PM Sensor Data:");
  while (Serial.available() > 0) 
   {
       // get incoming byte:
@@ -191,9 +189,9 @@ void read_PM()
       {
         recData[i]=inByte;
         //Serial.print(recData[i], HEX);
-        Serial.print(0x0F & (inByte>>4), HEX);
-        Serial.print(0x0F & inByte,HEX);
-        Serial.print("-");
+//        Serial.print(0x0F & (inByte>>4), HEX);
+//        Serial.print(0x0F & inByte,HEX);
+//        Serial.print("-");
 
         i++;
         if (i==24)
@@ -214,10 +212,10 @@ boolean verify_PM()
   int CRC = 0;
   
   if (recData[0]==0x42 && recData[1]==0x4d){
-    Serial.println("CRC data:");
+   // Serial.println("CRC data:");
     for (i=0;i<22;i++){
       CRC+=recData[i];
-      Serial.println(CRC);
+//      Serial.println(CRC);
       delay(5);
      
     }

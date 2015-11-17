@@ -1,33 +1,6 @@
-//YWROBOT
-//last updated on 21/12/2011
-//Tim Starling Fix the reset bug (Thanks Tim)
-//wiki doc http://www.dfrobot.com/wiki/index.php?title=I2C/TWI_LCD1602_Module_(SKU:_DFR0063)
-//Support Forum: http://www.dfrobot.com/forum/
-//Compatible with the Arduino IDE 1.0
-//Library version:1.1
-
-
 #include "LiquidCrystal_I2C.h"
 #include <inttypes.h>
-#if defined(ARDUINO) && ARDUINO >= 100
-
-#include "Arduino.h"
-
-#define printIIC(args)	Wire.write(args)
-inline size_t LiquidCrystal_I2C::write(uint8_t value) {
-	send(value, Rs);
-	return 0;
-}
-
-#else
-#include "WProgram.h"
-
-#define printIIC(args)	Wire.send(args)
-inline void LiquidCrystal_I2C::write(uint8_t value) {
-	send(value, Rs);
-}
-
-#endif
+#include "WProgram.h" 
 #include "Wire.h"
 
 
@@ -84,7 +57,7 @@ void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
 	// SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
 	// according to datasheet, we need at least 40ms after power rises above 2.7V
 	// before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
-	delay(50); 
+	delayMicroseconds(50000); 
   
 	// Now we pull both RS and R/W low to begin commands
 	expanderWrite(_backlightval);	// reset expanderand turn backlight off (Bit 8 =1)
@@ -94,20 +67,20 @@ void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
 	// this is according to the hitachi HD44780 datasheet
 	// figure 24, pg 46
 	
-	  // we start in 8bit mode, try to set 4 bit mode
-   write4bits(0x03 << 4);
-   delayMicroseconds(4500); // wait min 4.1ms
-   
-   // second try
-   write4bits(0x03 << 4);
-   delayMicroseconds(4500); // wait min 4.1ms
-   
-   // third go!
-   write4bits(0x03 << 4); 
-   delayMicroseconds(150);
-   
-   // finally, set to 4-bit interface
-   write4bits(0x02 << 4); 
+	// we start in 8bit mode, try to set 4 bit mode
+	write4bits(0x03);
+	delayMicroseconds(4500); // wait min 4.1ms
+	
+	// second try
+	write4bits(0x03);
+	delayMicroseconds(4500); // wait min 4.1ms
+	
+	// third go!
+	write4bits(0x03); 
+	delayMicroseconds(150);
+	
+	// finally, set to 4-bit interface
+	write4bits(0x02); 
 
 
 	// set # lines, font size, etc.
@@ -129,6 +102,8 @@ void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
 	home();
   
 }
+
+
 
 /********** high level commands, for the user! */
 void LiquidCrystal_I2C::clear(){
@@ -240,15 +215,20 @@ inline void LiquidCrystal_I2C::command(uint8_t value) {
 	send(value, 0);
 }
 
+inline void LiquidCrystal_I2C::write(uint8_t value) {
+	send(value, Rs);
+}
+
+
 
 /************ low level data pushing commands **********/
 
 // write either command or data
 void LiquidCrystal_I2C::send(uint8_t value, uint8_t mode) {
-	uint8_t highnib=value&0xf0;
-	uint8_t lownib=(value<<4)&0xf0;
-       write4bits((highnib)|mode);
-	write4bits((lownib)|mode); 
+	uint8_t highnib=value>>4;
+	uint8_t lownib=value & 0x0F;
+	write4bits((highnib)|mode);
+	write4bits((lownib)|mode);
 }
 
 void LiquidCrystal_I2C::write4bits(uint8_t value) {
@@ -258,7 +238,7 @@ void LiquidCrystal_I2C::write4bits(uint8_t value) {
 
 void LiquidCrystal_I2C::expanderWrite(uint8_t _data){                                        
 	Wire.beginTransmission(_Addr);
-	printIIC((int)(_data) | _backlightval);
+	Wire.send((int)(_data) | _backlightval);
 	Wire.endTransmission();   
 }
 
